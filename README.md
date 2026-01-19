@@ -95,8 +95,9 @@ The included `hello.ipynb` demonstrates:
 ## GitHub Pages Deployment
 
 This repository includes a GitHub Actions workflow that automatically:
-1. Converts all Jupyter notebooks in the `notebooks/` directory to Markdown
-2. Deploys them to GitHub Pages
+1. Converts all Jupyter notebooks in the `notebooks/` directory to HTML
+2. Creates an index page listing all available notebooks
+3. Deploys them to GitHub Pages
 
 The workflow runs automatically on every push to the `main` branch. You can also trigger it manually from the Actions tab.
 
