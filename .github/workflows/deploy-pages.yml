@@ -94,12 +94,15 @@ jobs:
           for html in _site/*.html; do
             if [ -f "$html" ] && [ "$(basename "$html")" != "index.html" ]; then
               filename=$(basename "$html" .html)
+              # HTML-escape the filename for safe display
+              safe_filename=$(echo "$filename" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'\''/\&#39;/g')
               md_file="_site/$filename.md"
               if [ -f "$md_file" ]; then
-                echo "                <li><a href=\"$filename.html\">$filename</a> <span class=\"formats\">(<a href=\"$filename.md\">markdown</a>)</span></li>" >> _site/index.html
+                formats=" <span class=\"formats\">(<a href=\"$filename.md\">markdown</a>)</span>"
               else
-                echo "                <li><a href=\"$filename.html\">$filename</a></li>" >> _site/index.html
+                formats=""
               fi
+              echo "                <li><a href=\"$filename.html\">$safe_filename</a>$formats</li>" >> _site/index.html
             fi
           done
           cat >> _site/index.html << 'EOF'
