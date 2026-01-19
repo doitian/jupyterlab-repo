@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Convert notebooks to HTML
+      - name: Convert notebooks to HTML and Markdown
         run: |
           mkdir -p _site
           for notebook in notebooks/*.ipynb; do
@@ -39,6 +39,8 @@ jobs:
               filename=$(basename "$notebook" .ipynb)
               echo "Converting $notebook to HTML..."
               uv run jupyter nbconvert --to html --output-dir=_site "$notebook"
+              echo "Converting $notebook to Markdown..."
+              uv run jupyter nbconvert --to markdown --output-dir=_site "$notebook"
             fi
           done
 
@@ -77,6 +79,10 @@ jobs:
                   a:hover {
                       text-decoration: underline;
                   }
+                  .formats {
+                      margin-left: 10px;
+                      font-size: 0.9em;
+                  }
               </style>
           </head>
           <body>
@@ -88,7 +94,7 @@ jobs:
           for html in _site/*.html; do
             if [ -f "$html" ] && [ "$(basename "$html")" != "index.html" ]; then
               filename=$(basename "$html" .html)
-              echo "                <li><a href=\"$filename.html\">$filename</a></li>" >> _site/index.html
+              echo "                <li><a href=\"$filename.html\">$filename</a> <span class=\"formats\">(<a href=\"$filename.md\">markdown</a>)</span></li>" >> _site/index.html
             fi
           done
           cat >> _site/index.html << 'EOF'
