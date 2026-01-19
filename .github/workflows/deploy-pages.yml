@@ -94,7 +94,12 @@ jobs:
           for html in _site/*.html; do
             if [ -f "$html" ] && [ "$(basename "$html")" != "index.html" ]; then
               filename=$(basename "$html" .html)
-              echo "                <li><a href=\"$filename.html\">$filename</a> <span class=\"formats\">(<a href=\"$filename.md\">markdown</a>)</span></li>" >> _site/index.html
+              md_file="_site/$filename.md"
+              if [ -f "$md_file" ]; then
+                echo "                <li><a href=\"$filename.html\">$filename</a> <span class=\"formats\">(<a href=\"$filename.md\">markdown</a>)</span></li>" >> _site/index.html
+              else
+                echo "                <li><a href=\"$filename.html\">$filename</a></li>" >> _site/index.html
+              fi
             fi
           done
           cat >> _site/index.html << 'EOF'
