@@ -1,0 +1,16 @@
+[project]
+name = "jupyterlab-repo"
+version = "0.1.0"
+description = "JupyterLab notebooks project"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MPL-2.0" }
+dependencies = [
+    "jupyterlab>=4.0.0",
+    "nbconvert>=7.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.1.0",
+]

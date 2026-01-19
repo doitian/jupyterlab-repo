@@ -1,0 +1,79 @@
+name: Deploy Notebooks to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Convert notebooks to markdown
+        run: |
+          mkdir -p _site
+          for notebook in notebooks/*.ipynb; do
+            if [ -f "$notebook" ]; then
+              filename=$(basename "$notebook" .ipynb)
+              echo "Converting $notebook to markdown..."
+              uv run jupyter nbconvert --to markdown --output-dir=_site "$notebook"
+            fi
+          done
+
+      - name: Create index page
+        run: |
+          cat > _site/index.md << 'EOF'
+          # Jupyter Notebooks
+
+          This site contains exported notebooks from the repository.
+
+          ## Available Notebooks
+
+          EOF
+          for md in _site/*.md; do
+            if [ -f "$md" ] && [ "$(basename "$md")" != "index.md" ]; then
+              filename=$(basename "$md" .md)
+              echo "- [$filename]($filename.md)" >> _site/index.md
+            fi
+          done
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
