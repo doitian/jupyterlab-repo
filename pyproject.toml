@@ -8,6 +8,7 @@ license = { text = "MPL-2.0" }
 dependencies = [
     "jupyterlab>=4.0.0",
     "nbconvert>=7.0.0",
+    "sympy>=1.14.0",
 ]
 
 [dependency-groups]
