@@ -1,26 +1,18 @@
 # jupyterlab-repo
 
-Monorepo for JupyterLab notebooks managed with [uv](https://docs.astral.sh/uv/).
+JupyterLab notebooks project using [uv](https://docs.astral.sh/uv/).
 
 ## Overview
 
-This repository is organized as a workspace with multiple notebook projects, each with their own dependencies managed by uv.
+This repository contains Jupyter notebooks for data analysis, machine learning, and visualization tasks, all managed with uv for fast and reliable dependency management.
 
 ## Structure
 
 ```
 jupyterlab-repo/
-├── pyproject.toml          # Root workspace configuration
+├── pyproject.toml          # Project configuration and dependencies
 ├── notebooks/
-│   ├── data-analysis/      # Data analysis notebooks
-│   │   ├── pyproject.toml
-│   │   └── example.ipynb
-│   ├── machine-learning/   # Machine learning notebooks
-│   │   ├── pyproject.toml
-│   │   └── example.ipynb
-│   └── visualization/      # Visualization notebooks
-│       ├── pyproject.toml
-│       └── example.ipynb
+│   └── hello.ipynb         # Example notebook
 └── README.md
 ```
 
@@ -54,7 +46,7 @@ cd jupyterlab-repo
 uv sync
 ```
 
-This will install JupyterLab and all dependencies for all workspace members.
+This will install JupyterLab. You can add more dependencies as needed by editing `pyproject.toml`.
 
 ## Usage
 
@@ -64,83 +56,60 @@ This will install JupyterLab and all dependencies for all workspace members.
 uv run jupyter lab
 ```
 
-This will start JupyterLab with access to all notebooks in the workspace.
+This will start JupyterLab with access to all notebooks in the `notebooks/` directory.
 
 ### Running a specific notebook
 
 ```bash
-uv run jupyter notebook notebooks/data-analysis/example.ipynb
+uv run jupyter notebook notebooks/hello.ipynb
 ```
 
 ### Adding dependencies
 
-#### To the root workspace:
-
-Edit `pyproject.toml` and add dependencies, then run:
+Edit `pyproject.toml` and add dependencies to the `dependencies` list, then run:
 
 ```bash
 uv sync
 ```
 
-#### To a specific notebook project:
-
-Edit the `pyproject.toml` in the notebook's directory (e.g., `notebooks/data-analysis/pyproject.toml`), then run:
-
-```bash
-uv sync
-```
-
-### Creating a new notebook project
-
-1. Create a new directory under `notebooks/`:
-
-```bash
-mkdir notebooks/my-project
-```
-
-2. Create a `pyproject.toml` file:
+For example, to add pandas and numpy:
 
 ```toml
-[project]
-name = "my-project"
-version = "0.1.0"
-description = "My project description"
-requires-python = ">=3.10"
 dependencies = [
-    # Add your dependencies here
+    "jupyterlab>=4.0.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
 ]
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
 ```
 
-3. Sync dependencies:
+### Adding new notebooks
 
-```bash
-uv sync
-```
+Simply create new `.ipynb` files in the `notebooks/` directory. They will automatically have access to all installed dependencies.
 
-## Workspace Benefits
+## Example Notebook
 
-- **Centralized dependency management**: All projects share the same virtual environment
-- **Consistent Python version**: Enforced across all notebooks
-- **Fast dependency resolution**: uv's resolver is significantly faster than pip
-- **Reproducible environments**: Lock files ensure consistent installs
+The included `hello.ipynb` demonstrates:
+- Basic Python execution in JupyterLab
+- How to add and use packages as needed
 
 ## Development
-
-### Code formatting
-
-```bash
-uv run black notebooks/
-```
 
 ### Linting
 
 ```bash
 uv run ruff check notebooks/
 ```
+
+The lock file (`uv.lock`) ensures consistent installations across different environments.
+
+## Dependencies
+
+This project includes:
+
+- **JupyterLab**: Interactive computing environment
+- **Development**: ruff (linting)
+
+Add additional packages as needed for your notebooks by editing `pyproject.toml`.
 
 ## License
 
