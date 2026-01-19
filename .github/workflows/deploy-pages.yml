@@ -94,10 +94,10 @@ jobs:
           for html in _site/*.html; do
             if [ -f "$html" ] && [ "$(basename "$html")" != "index.html" ]; then
               filename=$(basename "$html" .html)
-              # HTML-escape the filename for safe display
-              safe_filename=$(echo "$filename" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'\''/\&#39;/g')
-              # URL-encode the filename for href attributes
-              url_filename=$(echo "$filename" | sed 's/ /%20/g; s/&/%26/g; s/</%3C/g; s/>/%3E/g; s/"/%22/g; s/'\''/%27/g')
+              # HTML-escape the filename for safe display using Python
+              safe_filename=$(python3 -c "import html; print(html.escape('''$filename'''), end='')")
+              # URL-encode the filename for href attributes using Python
+              url_filename=$(python3 -c "from urllib.parse import quote; print(quote('''$filename'''), end='')")
               md_file="_site/$filename.md"
               if [ -f "$md_file" ]; then
                 formats=" <span class=\"formats\">(<a href=\"$url_filename.md\">markdown</a>)</span>"
