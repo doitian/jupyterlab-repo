@@ -31,33 +31,90 @@ jobs:
       - name: Install dependencies
         run: uv sync
 
-      - name: Convert notebooks to markdown
+      - name: Convert notebooks to HTML and Markdown
         run: |
           mkdir -p _site
           for notebook in notebooks/*.ipynb; do
             if [ -f "$notebook" ]; then
               filename=$(basename "$notebook" .ipynb)
-              echo "Converting $notebook to markdown..."
+              echo "Converting $notebook to HTML..."
+              uv run jupyter nbconvert --to html --output-dir=_site "$notebook"
+              echo "Converting $notebook to Markdown..."
               uv run jupyter nbconvert --to markdown --output-dir=_site "$notebook"
             fi
           done
 
       - name: Create index page
         run: |
-          cat > _site/index.md << 'EOF'
-          # Jupyter Notebooks
-
-          This site contains exported notebooks from the repository.
-
-          ## Available Notebooks
-
+          cat > _site/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Jupyter Notebooks</title>
+              <style>
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+                      max-width: 900px;
+                      margin: 40px auto;
+                      padding: 0 20px;
+                      line-height: 1.6;
+                  }
+                  h1 {
+                      border-bottom: 1px solid #eaecef;
+                      padding-bottom: 0.3em;
+                  }
+                  ul {
+                      list-style-type: none;
+                      padding-left: 0;
+                  }
+                  li {
+                      margin: 10px 0;
+                  }
+                  a {
+                      color: #0366d6;
+                      text-decoration: none;
+                  }
+                  a:hover {
+                      text-decoration: underline;
+                  }
+                  .formats {
+                      margin-left: 10px;
+                      font-size: 0.9em;
+                  }
+              </style>
+          </head>
+          <body>
+              <h1>Jupyter Notebooks</h1>
+              <p>This site contains exported notebooks from the repository.</p>
+              <h2>Available Notebooks</h2>
+              <ul>
           EOF
-          for md in _site/*.md; do
-            if [ -f "$md" ] && [ "$(basename "$md")" != "index.md" ]; then
-              filename=$(basename "$md" .md)
-              echo "- [$filename]($filename.md)" >> _site/index.md
+          for html in _site/*.html; do
+            if [ -f "$html" ] && [ "$(basename "$html")" != "index.html" ]; then
+              filename=$(basename "$html" .html)
+              # HTML-escape the filename for safe display using Python with proper argument passing
+              safe_filename=$(python3 -c 'import sys, html; print(html.escape(sys.argv[1]), end="")' "$filename")
+              # URL-encode the filename for href attributes using Python with safe='' to encode all characters
+              url_filename=$(python3 -c 'import sys; from urllib.parse import quote; print(quote(sys.argv[1], safe=""), end="")' "$filename")
+              md_file="_site/$filename.md"
+              if [ -f "$md_file" ]; then
+                formats=" <span class=\"formats\">(<a href=\"$url_filename.md\">markdown</a>)</span>"
+              else
+                formats=""
+              fi
+              echo "                <li><a href=\"$url_filename.html\">$safe_filename</a>$formats</li>" >> _site/index.html
             fi
           done
+          cat >> _site/index.html << 'EOF'
+              </ul>
+          </body>
+          </html>
+          EOF
+
+      - name: Disable Jekyll processing
+        run: touch _site/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
