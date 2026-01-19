@@ -92,6 +92,20 @@ The included `hello.ipynb` demonstrates:
 - Basic Python execution in JupyterLab
 - How to add and use packages as needed
 
+## GitHub Pages Deployment
+
+This repository includes a GitHub Actions workflow that automatically:
+1. Converts all Jupyter notebooks in the `notebooks/` directory to Markdown
+2. Deploys them to GitHub Pages
+
+The workflow runs automatically on every push to the `main` branch. You can also trigger it manually from the Actions tab.
+
+To enable GitHub Pages:
+1. Go to your repository Settings > Pages
+2. Under "Source", select "GitHub Actions"
+
+Once deployed, your notebooks will be available at: `https://<username>.github.io/<repository-name>/`
+
 ## Development
 
 ### Linting
@@ -107,6 +121,7 @@ The lock file (`uv.lock`) ensures consistent installations across different envi
 This project includes:
 
 - **JupyterLab**: Interactive computing environment
+- **nbconvert**: Convert notebooks to other formats (used for GitHub Pages deployment)
 - **Development**: ruff (linting)
 
 Add additional packages as needed for your notebooks by editing `pyproject.toml`.
