@@ -102,7 +102,7 @@ jobs:
           </body>
           </html>
           EOF
-          
+
       - name: Disable Jekyll processing
         run: touch _site/.nojekyll
 
