@@ -44,7 +44,7 @@ pip install uv
 2. Clone this repository:
 
 ```bash
-git clone https://github.com/doitian/jupyterlab-repo.git
+git clone <repository-url>
 cd jupyterlab-repo
 ```
 
